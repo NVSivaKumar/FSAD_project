@@ -1,10 +1,14 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const CyberMatrixBackground = ({ children }) => {
     const gridRef = useRef(null);
     const [isClient, setIsClient] = useState(false);
+
+    // Use our global theme context
+    const { activeTheme } = useTheme();
 
     useEffect(() => {
         setIsClient(true);
@@ -114,20 +118,20 @@ const CyberMatrixBackground = ({ children }) => {
                     font-family: 'Courier New', Courier, monospace;
                     font-size: 1.2rem;
                     
-                    /* Use CSS variable for dynamic styling */
-                    opacity: calc(0.1 + var(--intensity) * 0.9);
-                    color: hsl(120, 100%, calc(50% + var(--intensity) * 50%));
-                    text-shadow: 0 0 calc(var(--intensity) * 15px) hsl(120, 100%, 50%);
+                    /* Use dynamic theme colors formatted from HSL */
+                    opacity: calc(0.3 + var(--intensity) * 0.7);
+                    color: hsl(${activeTheme.hsl.split(',')[0]}, ${activeTheme.hsl.split(',')[1]}, calc(60% + var(--intensity) * 40%));
+                    text-shadow: 0 0 calc(8px + var(--intensity) * 20px) hsl(${activeTheme.hsl});
                     transform: scale(calc(1 + var(--intensity) * 0.2));
-                    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
+                    transition: color 0.5s ease, text-shadow 0.5s ease, transform 0.2s ease;
                 }
                 .tile.glitch {
                     animation: glitch-anim 0.2s ease;
                 }
                 @keyframes glitch-anim {
-                    0% { transform: scale(1); color: #0f0; }
+                    0% { transform: scale(1); color: ${activeTheme.primaryAccent}; }
                     50% { transform: scale(1.2); color: #fff; text-shadow: 0 0 10px #fff; }
-                    100% { transform: scale(1); color: #0f0; }
+                    100% { transform: scale(1); color: ${activeTheme.primaryAccent}; }
                 }
             `}</style>
 

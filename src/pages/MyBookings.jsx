@@ -44,7 +44,7 @@ const MyBookings = () => {
                                         {appt.counselorName}
                                     </h3>
                                     <span style={{
-                                        background: 'rgba(16, 185, 129, 0.2)',
+                                        background: 'var(--app-border-color)',
                                         color: 'var(--accent-primary)',
                                         padding: '4px 10px',
                                         borderRadius: '12px',

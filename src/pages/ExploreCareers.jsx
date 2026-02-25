@@ -72,8 +72,8 @@ const ExploreCareers = () => {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
                                         <div>
                                             <span style={{
-                                                background: 'rgba(16, 185, 129, 0.2)',
-                                                color: 'var(--accent-primary)',
+                                                background: 'var(--app-border-color)', /* dynamically from theme */
+                                                color: '#fff',
                                                 padding: '4px 10px',
                                                 borderRadius: '12px',
                                                 fontSize: '0.8rem',
@@ -117,7 +117,15 @@ const ExploreCareers = () => {
                                         <Link
                                             to={`/career/${career.id}`}
                                             className="btn-secondary z-10"
-                                            style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', textDecoration: 'none' }}
+                                            style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', textDecoration: 'none', transition: 'all 0.3s ease' }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = 'var(--accent-primary)';
+                                                e.currentTarget.style.color = '#fff';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = 'var(--bg-secondary)';
+                                                e.currentTarget.style.color = 'var(--text-primary)';
+                                            }}
                                         >
                                             View Details
                                         </Link>

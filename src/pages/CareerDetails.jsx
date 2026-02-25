@@ -70,7 +70,7 @@ const CareerDetails = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
                     <div>
                         <span style={{
-                            background: 'rgba(16, 185, 129, 0.2)',
+                            background: 'var(--app-border-color)',
                             color: 'var(--accent-primary)',
                             padding: '6px 14px',
                             borderRadius: '20px',
@@ -101,12 +101,12 @@ const CareerDetails = () => {
                                     onClick={() => setSelectedSkill(selectedSkill === skill ? null : skill)}
                                     style={{
                                         cursor: 'pointer',
-                                        background: selectedSkill === skill ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                                        border: selectedSkill === skill ? '1px solid #10b981' : '1px solid var(--border-color)',
+                                        background: selectedSkill === skill ? 'var(--app-border-color)' : 'rgba(255, 255, 255, 0.05)',
+                                        border: selectedSkill === skill ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
                                         padding: '6px 12px',
                                         borderRadius: '6px',
                                         fontSize: '0.9rem',
-                                        color: selectedSkill === skill ? '#10b981' : 'var(--text-secondary)',
+                                        color: selectedSkill === skill ? 'var(--accent-primary)' : 'var(--text-secondary)',
                                         transition: 'all 0.2s ease'
                                     }}>
                                     {skill}
@@ -117,12 +117,12 @@ const CareerDetails = () => {
                             <div style={{
                                 marginTop: '1rem',
                                 padding: '1rem',
-                                background: 'rgba(16, 185, 129, 0.05)',
-                                border: '1px solid rgba(16, 185, 129, 0.2)',
+                                background: 'var(--app-border-color)', // using transparent theme color
+                                border: '1px solid var(--app-border-color)',
                                 borderRadius: '8px',
                                 animation: 'fade-in 0.3s ease-in-out'
                             }}>
-                                <h4 style={{ color: '#34d399', margin: '0 0 0.25rem 0', fontSize: '0.95rem' }}>Why {selectedSkill}?</h4>
+                                <h4 style={{ color: 'var(--accent-primary)', margin: '0 0 0.25rem 0', fontSize: '0.95rem' }}>Why {selectedSkill}?</h4>
                                 <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.85rem', lineHeight: 1.5 }}>
                                     {skillDescriptions[selectedSkill] || 'An essential skill required for success in this career trajectory.'}
                                 </p>
@@ -131,9 +131,9 @@ const CareerDetails = () => {
                     </div>
                     <div>
                         <strong style={{ marginBottom: '0.75rem', fontSize: '1.1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <DollarSign size={20} color="#10b981" /> Expected Salary
+                            <DollarSign size={20} color="var(--accent-primary)" /> Expected Salary
                         </strong>
-                        <span style={{ fontSize: '1.25rem', color: '#10b981', fontWeight: '600' }}>
+                        <span style={{ fontSize: '1.25rem', color: 'var(--accent-primary)', fontWeight: '600' }}>
                             {career.salary}
                         </span>
                     </div>
@@ -150,7 +150,7 @@ const CareerDetails = () => {
                                 background: 'rgba(0, 0, 0, 0.7)',
                                 backdropFilter: 'blur(24px) saturate(120%)',
                                 WebkitBackdropFilter: 'blur(24px) saturate(120%)',
-                                border: '1px solid rgba(16, 185, 129, 0.4)',
+                                border: '1px solid var(--app-border-color)',
                                 padding: '1.5rem',
                                 borderRadius: '12px',
                                 borderLeft: '4px solid var(--accent-secondary)',
@@ -175,24 +175,27 @@ const CareerDetails = () => {
                                     {step.step}
                                 </strong>
                                 <a href={step.url} target="_blank" rel="noopener noreferrer" style={{
-                                    color: '#10b981',
+                                    color: '#fff',
                                     textDecoration: 'none',
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '0.5rem',
                                     fontSize: '1rem',
                                     padding: '0.5rem 1rem',
-                                    background: 'rgba(16, 185, 129, 0.1)',
+                                    background: 'var(--app-border-color)', // acts as transparent theme bg
                                     borderRadius: '8px',
                                     transition: 'background 0.2s',
                                     marginTop: '0.5rem'
                                 }}
                                     onMouseEnter={(e) => {
-                                        e.target.style.background = 'rgba(16, 185, 129, 0.2)';
+                                        // slightly more opaque theme background on hover
+                                        e.target.style.background = 'var(--app-border-color)';
+                                        e.target.style.filter = 'brightness(1.5)';
                                         e.target.style.textDecoration = 'none';
                                     }}
                                     onMouseLeave={(e) => {
-                                        e.target.style.background = 'rgba(16, 185, 129, 0.1)';
+                                        e.target.style.background = 'var(--app-border-color)';
+                                        e.target.style.filter = 'none';
                                     }}
                                 >
                                     <ExternalLink size={16} /> Explore Resource: {step.resource}

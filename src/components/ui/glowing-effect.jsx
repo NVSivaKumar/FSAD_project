@@ -130,17 +130,17 @@ const GlowingEffect = memo(
                   var(--black),
                   var(--black) calc(25% / var(--repeating-conic-gradient-times))
                 )`
-                                    : `radial-gradient(circle, #10b981 10%, #10b98100 20%),
-                radial-gradient(circle at 40% 40%, #059669 5%, #05966900 15%),
-                radial-gradient(circle at 60% 60%, #34d399 10%, #34d39900 20%), 
-                radial-gradient(circle at 40% 60%, #047857 10%, #04785700 20%),
+                                    : `radial-gradient(circle, var(--accent-primary) 10%, transparent 20%),
+                radial-gradient(circle at 40% 40%, var(--accent-secondary) 5%, transparent 15%),
+                radial-gradient(circle at 60% 60%, var(--accent-primary) 10%, transparent 20%), 
+                radial-gradient(circle at 40% 60%, var(--accent-secondary) 10%, transparent 20%),
                 repeating-conic-gradient(
                   from 236.84deg at 50% 50%,
-                  #10b981 0%,
-                  #059669 calc(25% / var(--repeating-conic-gradient-times)),
-                  #34d399 calc(50% / var(--repeating-conic-gradient-times)), 
-                  #047857 calc(75% / var(--repeating-conic-gradient-times)),
-                  #10b981 calc(100% / var(--repeating-conic-gradient-times))
+                  var(--accent-primary) 0%,
+                  var(--accent-secondary) calc(25% / var(--repeating-conic-gradient-times)),
+                  var(--accent-primary) calc(50% / var(--repeating-conic-gradient-times)), 
+                  var(--accent-secondary) calc(75% / var(--repeating-conic-gradient-times)),
+                  var(--accent-primary) calc(100% / var(--repeating-conic-gradient-times))
                 )`,
                         }
                     }

@@ -73,7 +73,7 @@ const Counseling = () => {
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                             <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.25rem 0' }}>{counselor.name}</h3>
                                             {appointments.some(appt => appt.counselorId === counselor.id) && (
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
+                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'var(--app-border-color)', color: 'var(--accent-primary)', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
                                                     <CheckCircle size={14} /> Booked
                                                 </span>
                                             )}
@@ -101,7 +101,7 @@ const Counseling = () => {
                             {bookingSuccess ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '3rem 1rem', textAlign: 'center' }} className="animate-fade-in">
                                     <div style={{
-                                        width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        width: '80px', height: '80px', borderRadius: '50%', background: 'var(--app-border-color)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         animation: 'fade-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                                     }}>
                                         <CheckCircle size={40} />

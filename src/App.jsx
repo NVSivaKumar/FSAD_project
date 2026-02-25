@@ -10,6 +10,7 @@ import CareerDetails from './pages/CareerDetails';
 import MyBookings from './pages/MyBookings';
 import CyberMatrixBackground from './components/ui/cyber-matrix-background';
 import { initializeMockData } from './utils/mockData';
+import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 
 function App() {
@@ -20,26 +21,28 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <CyberMatrixBackground>
-        <div className="app-container">
-          <Navbar isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
+    <ThemeProvider>
+      <Router>
+        <CyberMatrixBackground>
+          <div className="app-container">
+            <Navbar isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
 
-          <main>
-            <Routes>
-              <Route path="/" element={<Hero />} />
-              <Route path="/explore" element={<div className="container"><ExploreCareers /></div>} />
-              <Route path="/career/:id" element={<div className="container"><CareerDetails /></div>} />
-              <Route path="/counseling" element={<div className="container"><Counseling /></div>} />
-              <Route path="/my-bookings" element={<div className="container"><MyBookings /></div>} />
-              <Route path="/admin" element={<div className="container"><AdminDashboard /></div>} />
-              <Route path="/admin/resources" element={<div className="container"><AdminResources /></div>} />
-              <Route path="/admin/appointments" element={<div className="container"><AdminDashboard /></div>} />
-            </Routes>
-          </main>
-        </div>
-      </CyberMatrixBackground>
-    </Router>
+            <main>
+              <Routes>
+                <Route path="/" element={<Hero />} />
+                <Route path="/explore" element={<div className="container"><ExploreCareers /></div>} />
+                <Route path="/career/:id" element={<div className="container"><CareerDetails /></div>} />
+                <Route path="/counseling" element={<div className="container"><Counseling /></div>} />
+                <Route path="/my-bookings" element={<div className="container"><MyBookings /></div>} />
+                <Route path="/admin" element={<div className="container"><AdminDashboard /></div>} />
+                <Route path="/admin/resources" element={<div className="container"><AdminResources /></div>} />
+                <Route path="/admin/appointments" element={<div className="container"><AdminDashboard /></div>} />
+              </Routes>
+            </main>
+          </div>
+        </CyberMatrixBackground>
+      </Router>
+    </ThemeProvider>
   );
 }
 
