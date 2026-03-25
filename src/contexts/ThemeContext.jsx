@@ -2,6 +2,20 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export const themes = [
     {
+        id: 'golden',
+        name: 'Deep Gold',
+        border: 'border-yellow-500/20',
+        shadow: 'shadow-[0_0_40px_rgba(234,179,8,0.15)]',
+        badgeBg: 'bg-yellow-500/10',
+        text: 'text-yellow-500',
+        buttonGradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600',
+        buttonShadow: 'shadow-[0_4px_15px_rgba(234,179,8,0.3)] hover:shadow-[0_6px_20px_rgba(234,179,8,0.5)]',
+        colorCode: '#eab308',
+        hsl: '45, 93%, 47%', 
+        primaryAccent: '#ca8a04',
+        secondaryAccent: '#eab308'
+    },
+    {
         id: 'cyber',
         name: 'Cyber Green',
         border: 'border-green-500/20',

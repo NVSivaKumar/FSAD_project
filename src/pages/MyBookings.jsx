@@ -5,16 +5,44 @@ import { Calendar, Clock, User, Trash2 } from 'lucide-react';
 
 const MyBookings = () => {
     const [appointments, setAppointments] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+
+    const fetchAppointments = async () => {
+        if (!currentUser) return;
+        setIsLoading(true);
+        try {
+            const response = await fetch(`http://localhost:5000/api/appointments/${currentUser.id}/student`);
+            if (!response.ok) throw new Error('Failed to fetch appointments');
+            const data = await response.json();
+            setAppointments(data);
+        } catch (err) {
+            console.error("Error:", err);
+            setError("Could not load your bookings.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        // Fetch all appointments from mock data
-        setAppointments(getAppointments());
+        fetchAppointments();
     }, []);
 
-    const handleCancel = (id) => {
+    const handleCancel = async (id) => {
         if (window.confirm("Are you sure you want to cancel this booking?")) {
-            cancelAppointment(id);
-            setAppointments(getAppointments());
+            try {
+                const response = await fetch(`http://localhost:5000/api/appointments/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('Failed to cancel appointment');
+                // Refresh list
+                fetchAppointments();
+            } catch (err) {
+                console.error("Error cancelling:", err);
+                alert("Failed to cancel the booking. Please try again.");
+            }
         }
     };
 
@@ -44,14 +72,15 @@ const MyBookings = () => {
                                         {appt.counselorName}
                                     </h3>
                                     <span style={{
-                                        background: 'var(--app-border-color)',
-                                        color: 'var(--accent-primary)',
+                                        background: appt.status === 'Pending' ? 'rgba(234, 179, 8, 0.1)' : appt.status === 'Rejected' ? 'rgba(239, 68, 68, 0.1)' : 'var(--app-border-color)',
+                                        color: appt.status === 'Pending' ? '#eab308' : appt.status === 'Rejected' ? '#ef4444' : 'var(--accent-primary)',
                                         padding: '4px 10px',
                                         borderRadius: '12px',
                                         fontSize: '0.8rem',
-                                        fontWeight: '600'
+                                        fontWeight: '600',
+                                        border: `1px solid ${appt.status === 'Pending' ? 'rgba(234, 179, 8, 0.3)' : appt.status === 'Rejected' ? 'rgba(239, 68, 68, 0.3)' : 'transparent'}`
                                     }}>
-                                        {appt.status || 'Scheduled'}
+                                        {appt.status || 'Pending'}
                                     </span>
                                 </div>
                             </div>

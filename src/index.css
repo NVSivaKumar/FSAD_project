@@ -148,3 +148,40 @@ select {
   margin: 0 auto;
   padding: 0 2rem;
 }
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%,-40%) scale(1);
+  }
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease .75s 1 forwards;
+}
+
+.loader {
+  border: 3px solid rgba(255,255,255,0.1);
+  border-left-color: var(--accent-primary);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin-slow 1s linear infinite;
+}
+
+/* Hide Spline Watermark Logo - Comprehensive */
+canvas + div,
+canvas ~ div,
+canvas + a,
+canvas ~ a,
+a[href*="spline.design"],
+div[style*="absolute"][style*="bottom"] > a[href*="spline"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

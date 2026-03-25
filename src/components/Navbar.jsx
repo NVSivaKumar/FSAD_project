@@ -1,25 +1,41 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Briefcase, Calendar, LayoutDashboard, Database, Users, Palette } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 
-const Navbar = ({ isAdmin, setIsAdmin }) => {
+const Navbar = () => {
     const location = useLocation();
     const { activeThemeIndex, setActiveThemeIndex, themes } = useTheme();
+    const { user } = useAuth();
 
-    const userLinks = [
+    const publicLinks = [
+        { name: 'Home', path: '/', icon: <Briefcase size={18} /> },
+    ];
+
+    const studentLinks = [
         { name: 'Home', path: '/', icon: <Briefcase size={18} /> },
         { name: 'Explore Careers', path: '/explore', icon: <Briefcase size={18} /> },
         { name: 'Counseling', path: '/counseling', icon: <Calendar size={18} /> },
         { name: 'My Bookings', path: '/my-bookings', icon: <Calendar size={18} /> },
     ];
 
-    const adminLinks = [
-        { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={18} /> },
-        { name: 'Resources', path: '/admin/resources', icon: <Database size={18} /> },
-        { name: 'Appointments', path: '/admin/appointments', icon: <Users size={18} /> },
+    const counselorLinks = [
+        { name: 'Home', path: '/', icon: <Briefcase size={18} /> },
+        { name: 'My Students', path: '/counselor/students', icon: <Users size={18} /> },
+        { name: 'My Appointments', path: '/counselor/appointments', icon: <Calendar size={18} /> },
     ];
 
-    const links = isAdmin ? adminLinks : userLinks;
+    const adminLinks = [
+        { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={18} /> },
+        { name: 'Applicants', path: '/admin/applicants', icon: <Users size={18} /> },
+        { name: 'Resources', path: '/admin/resources', icon: <Database size={18} /> },
+        { name: 'Appointments', path: '/admin/appointments', icon: <Calendar size={18} /> },
+    ];
+
+    let links = publicLinks;
+    if (user?.role === 'admin') links = adminLinks;
+    else if (user?.role === 'counselor') links = counselorLinks;
+    else if (user?.role === 'student') links = studentLinks;
 
     return (
         <nav className="glass-panel" style={{
@@ -34,7 +50,7 @@ const Navbar = ({ isAdmin, setIsAdmin }) => {
             zIndex: 100,
             borderColor: 'var(--app-border-color)' // Dynamic border
         }}>
-            <Link to={isAdmin ? '/admin' : '/'} className="logo text-gradient" style={{ fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Link to={user?.role === 'admin' ? '/admin' : '/'} className="logo text-gradient" style={{ fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Briefcase color="var(--accent-primary)" />
                 PathFinder
             </Link>
@@ -102,14 +118,6 @@ const Navbar = ({ isAdmin, setIsAdmin }) => {
                         ))}
                     </div>
                 </div>
-
-                <button
-                    className="btn-secondary"
-                    onClick={() => setIsAdmin(!isAdmin)}
-                    style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-                >
-                    {isAdmin ? 'User Mode' : 'Admin Mode'}
-                </button>
             </div>
         </nav>
     );

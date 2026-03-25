@@ -6,6 +6,8 @@ import { LayoutDashboard, Users, Database, Clock, CalendarCheck } from 'lucide-r
 const AdminDashboard = () => {
     const [appointments, setAppointments] = useState([]);
     const [careersCount, setCareersCount] = useState(0);
+    const [pendingUsers, setPendingUsers] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         setAppointments(getAppointments().reverse()); // Show newest first

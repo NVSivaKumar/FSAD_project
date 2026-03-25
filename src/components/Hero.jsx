@@ -1,5 +1,6 @@
 import React from 'react';
 import CyberMatrixHero from './ui/cyber-matrix-hero';
+import { Section as RobotBanner } from '@/components/ui/demo-robot';
 import { Link } from 'react-router-dom';
 import { Compass, BookOpen, Users, CheckCircle } from 'lucide-react';
 
@@ -19,7 +20,9 @@ const Hero = () => {
             <CyberMatrixHero />
 
             <div className="container mx-auto relative z-10" style={{ marginTop: '10rem' }}>
-                <div className="text-center" style={{ marginBottom: '4rem' }}>
+                <RobotBanner />
+                
+                <div className="text-center" style={{ marginBottom: '4rem', marginTop: '6rem' }}>
                     <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
                         Master Your <span style={{ background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent' }}>Trajectory</span>
                     </h2>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../components/Card';
 import Input from '../components/Input';
-import { getCounselors, bookAppointment, getAppointments } from '../utils/mockData';
+import { getCounselors } from '../utils/mockData';
 import { Calendar, Clock, User, Star, CheckCircle } from 'lucide-react';
 
 const Counseling = () => {
@@ -13,32 +13,102 @@ const Counseling = () => {
     const [studentName, setStudentName] = useState('');
     const [message, setMessage] = useState('');
     const [bookingSuccess, setBookingSuccess] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const currentUser = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        setCounselors(getCounselors());
-        setAppointments(getAppointments());
+        const fetchCounselors = async () => {
+            setIsLoading(true);
+            try {
+                const response = await fetch('http://localhost:5000/api/counselors');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch counselors');
+                }
+                const data = await response.json();
+
+                // Map backend fields to UI fields
+                const formattedCounselors = data.map(c => ({
+                    id: c.id,
+                    name: c.fullName,
+                    expertise: c.degree || 'Career Counselor',
+                    rating: 5.0, // Default rating
+                    bio: 'Professional career counselor ready to help you navigate your career.'
+                }));
+                setCounselors(formattedCounselors);
+            } catch (err) {
+                console.error("Error fetching counselors:", err);
+                setError("Failed to load counselors. Please try again later.");
+                // Fallback to mock data if backend fails
+                setCounselors(getCounselors());
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        const fetchUserAppointments = async () => {
+            if (!currentUser || currentUser.role !== 'student') return;
+            try {
+                const response = await fetch(`http://localhost:5000/api/appointments/${currentUser.id}/student`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setAppointments(data);
+                }
+            } catch (err) {
+                console.error("Error fetching appointments:", err);
+            }
+        };
+
+        fetchCounselors();
+        fetchUserAppointments();
     }, []);
 
-    const handleBooking = (e) => {
+    const handleBooking = async (e) => {
         e.preventDefault();
-        bookAppointment({
-            counselorId: selectedCounselor.id,
-            counselorName: selectedCounselor.name,
-            studentName,
-            date,
-            time,
-            status: 'Scheduled',
-        });
-        setAppointments(getAppointments());
-        setBookingSuccess(true);
 
-        setTimeout(() => {
-            setBookingSuccess(false);
-            setSelectedCounselor(null);
-            setDate('');
-            setTime('');
-            setStudentName('');
-        }, 3000);
+        // Ensure user is logged in
+        if (!currentUser) {
+            alert("Please log in to book a session.");
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:5000/api/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    studentId: currentUser.id,
+                    studentName: studentName || currentUser.fullName,
+                    counselorId: selectedCounselor.id,
+                    counselorName: selectedCounselor.name,
+                    date,
+                    time,
+                    message
+                })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Failed to book appointment');
+            }
+
+            setBookingSuccess(true);
+            setTimeout(() => {
+                setBookingSuccess(false);
+                setSelectedCounselor(null);
+                setDate('');
+                setTime('');
+                setStudentName('');
+                setMessage('');
+            }, 3000);
+
+        } catch (error) {
+            console.error("Error booking appointment:", error);
+            alert(error.message);
+        }
     };
 
     return (
@@ -54,44 +124,53 @@ const Counseling = () => {
                 {/* Counselors List */}
                 <div>
                     <h2 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>Available Counselors</h2>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        {counselors.map((counselor, i) => (
-                            <Card
-                                key={counselor.id}
-                                className={`delay-${(i % 3 + 1) * 100} animate-fade-in`}
-                                style={{ border: selectedCounselor?.id === counselor.id ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)' }}
-                                onClick={() => setSelectedCounselor(counselor)}
-                            >
-                                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
-                                    <div style={{
-                                        width: '60px', height: '60px', borderRadius: '50%', flexShrink: 0,
-                                        background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                    }}>
-                                        <User size={32} color="var(--accent-secondary)" />
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.25rem 0' }}>{counselor.name}</h3>
-                                            {appointments.some(appt => appt.counselorId === counselor.id) && (
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'var(--app-border-color)', color: 'var(--accent-primary)', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
-                                                    <CheckCircle size={14} /> Booked
-                                                </span>
-                                            )}
+
+                    {isLoading ? (
+                        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>Loading counselors...</div>
+                    ) : error && counselors.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>{error}</div>
+                    ) : counselors.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>No counselors available at the moment.</div>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            {counselors.map((counselor, i) => (
+                                <Card
+                                    key={counselor.id}
+                                    className={`delay-${(i % 3 + 1) * 100} animate-fade-in`}
+                                    style={{ border: selectedCounselor?.id === counselor.id ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)' }}
+                                    onClick={() => setSelectedCounselor(counselor)}
+                                >
+                                    <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
+                                        <div style={{
+                                            width: '60px', height: '60px', borderRadius: '50%', flexShrink: 0,
+                                            background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                        }}>
+                                            <User size={32} color="var(--accent-secondary)" />
                                         </div>
-                                        <p style={{ color: 'var(--accent-primary)', fontSize: '0.9rem', margin: '0 0 0.5rem 0', fontWeight: '500' }}>
-                                            {counselor.expertise}
-                                        </p>
-                                        <p style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#fbbf24', fontSize: '0.85rem', margin: '0 0 0.5rem 0' }}>
-                                            <Star size={14} fill="#fbbf24" /> {counselor.rating}
-                                        </p>
-                                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0 }}>
-                                            {counselor.bio}
-                                        </p>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.25rem 0' }}>{counselor.name}</h3>
+                                                {appointments.some(appt => appt.counselorId === counselor.id) && (
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'var(--app-border-color)', color: 'var(--accent-primary)', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
+                                                        <CheckCircle size={14} /> Booked
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p style={{ color: 'var(--accent-primary)', fontSize: '0.9rem', margin: '0 0 0.5rem 0', fontWeight: '500' }}>
+                                                {counselor.expertise}
+                                            </p>
+                                            <p style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#fbbf24', fontSize: '0.85rem', margin: '0 0 0.5rem 0' }}>
+                                                <Star size={14} fill="#fbbf24" /> {counselor.rating}
+                                            </p>
+                                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0 }}>
+                                                {counselor.bio}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Booking Form or Success Animation */}
@@ -106,8 +185,8 @@ const Counseling = () => {
                                     }}>
                                         <CheckCircle size={40} />
                                     </div>
-                                    <h3 style={{ fontSize: '1.8rem', margin: 0, color: 'var(--text-primary)' }}>Session Booked!</h3>
-                                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Your appointment with {selectedCounselor.name} has been confirmed. You can check your schedule in 'My Bookings'.</p>
+                                    <h3 style={{ fontSize: '1.8rem', margin: 0, color: 'var(--text-primary)' }}>Request for counseling has been sent</h3>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Your appointment request with {selectedCounselor.name} has been submitted. You can check its status in 'My Bookings'.</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleBooking} style={{ marginTop: '1.5rem' }}>
