@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, User, CheckCircle, XCircle, Check, X } from 'lucide-react';
+import { Calendar, Clock, User, CheckCircle, XCircle, Check, X, Video } from 'lucide-react';
 import Card from '../components/Card';
 
 const MyAppointments = () => {
@@ -68,7 +68,25 @@ const MyAppointments = () => {
                 </div>
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
-                    {appointments.map((appt, i) => (
+                    {appointments.map((appt, i) => {
+                        let displayStatus = appt.status || 'Pending';
+                        let isJoinable = false;
+
+                        if (displayStatus === 'Approved' || displayStatus === 'Scheduled') {
+                             const apptDateTime = new Date(`${appt.date}T${appt.time}`);
+                             if (!isNaN(apptDateTime.getTime())) {
+                                 const now = new Date();
+                                 const diffInMinutes = (now - apptDateTime) / (1000 * 60);
+                                 
+                                 if (diffInMinutes > 10) {
+                                     displayStatus = 'Finished';
+                                 } else if (diffInMinutes >= 0 && diffInMinutes <= 10) {
+                                     isJoinable = true;
+                                 }
+                             }
+                        }
+
+                        return (
                         <Card key={appt.id || i} className={`delay-${(i % 3 + 1) * 100} animate-fade-in`} style={{ borderLeft: '4px solid var(--accent-primary)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
                                 <div>
@@ -77,15 +95,15 @@ const MyAppointments = () => {
                                         {appt.studentName}
                                     </h3>
                                     <span style={{
-                                        background: appt.status === 'Pending' ? 'rgba(234, 179, 8, 0.1)' : appt.status === 'Rejected' ? 'rgba(239, 68, 68, 0.1)' : 'var(--app-border-color)',
-                                        color: appt.status === 'Pending' ? '#eab308' : appt.status === 'Rejected' ? '#ef4444' : 'var(--accent-primary)',
+                                        background: displayStatus === 'Pending' ? 'rgba(234, 179, 8, 0.1)' : displayStatus === 'Rejected' ? 'rgba(239, 68, 68, 0.1)' : displayStatus === 'Finished' ? 'rgba(156, 163, 175, 0.1)' : 'var(--app-border-color)',
+                                        color: displayStatus === 'Pending' ? '#eab308' : displayStatus === 'Rejected' ? '#ef4444' : displayStatus === 'Finished' ? '#9ca3af' : 'var(--accent-primary)',
                                         padding: '4px 10px',
                                         borderRadius: '12px',
                                         fontSize: '0.8rem',
                                         fontWeight: '600',
-                                        border: `1px solid ${appt.status === 'Pending' ? 'rgba(234, 179, 8, 0.3)' : appt.status === 'Rejected' ? 'rgba(239, 68, 68, 0.3)' : 'transparent'}`
+                                        border: `1px solid ${displayStatus === 'Pending' ? 'rgba(234, 179, 8, 0.3)' : displayStatus === 'Rejected' ? 'rgba(239, 68, 68, 0.3)' : displayStatus === 'Finished' ? 'rgba(156, 163, 175, 0.3)' : 'transparent'}`
                                     }}>
-                                        {appt.status || 'Pending'}
+                                        {displayStatus}
                                     </span>
                                 </div>
                             </div>
@@ -107,7 +125,7 @@ const MyAppointments = () => {
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
-                                {(appt.status === 'Pending' || !appt.status) ? (
+                                {(displayStatus === 'Pending') ? (
                                     <>
                                         <button
                                             className="btn-secondary"
@@ -124,9 +142,24 @@ const MyAppointments = () => {
                                             <Check size={16} /> Approve
                                         </button>
                                     </>
-                                ) : appt.status === 'Approved' || appt.status === 'Scheduled' ? (
+                                ) : displayStatus === 'Approved' || displayStatus === 'Scheduled' ? (
+                                    <>
+                                        {isJoinable && (
+                                            <button
+                                                className="btn-primary"
+                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                                onClick={() => window.open('https://meet.google.com/new', '_blank')}
+                                            >
+                                                <Video size={16} /> Join Now
+                                            </button>
+                                        )}
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                                            <CheckCircle size={14} color="var(--accent-primary)" /> Approved
+                                        </span>
+                                    </>
+                                ) : displayStatus === 'Finished' ? (
                                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                                        <CheckCircle size={14} color="var(--accent-primary)" /> Approved
+                                        <CheckCircle size={14} color="var(--text-secondary)" /> Finished
                                     </span>
                                 ) : (
                                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ef4444', fontSize: '0.85rem' }}>
@@ -135,7 +168,8 @@ const MyAppointments = () => {
                                 )}
                             </div>
                         </Card>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

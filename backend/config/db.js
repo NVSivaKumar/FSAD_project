@@ -1,20 +1,73 @@
-import sqlite3 from 'sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import mysql from 'mysql2';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'Pathfinder',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
 
-// Open database connection
-// We use a local file instead of memory so data persists between restarts.
-const dbPath = path.resolve(__dirname, '../database.sqlite');
-
-const db = new sqlite3.Database(dbPath, (err) => {
+// Test connection
+pool.getConnection((err, connection) => {
     if (err) {
-        console.error('Error connecting to the SQLite database', err.message);
+        console.error('Error connecting to the MySQL database. Is it created and running?:', err.message);
     } else {
-        console.log('Connected to the SQLite database.');
+        console.log('Connected to the MySQL database (Pathfinder).');
+        connection.release();
     }
 });
+
+// Create a wrapper that behaves like sqlite3 API, so we don't need to rewrite all queries
+const db = {
+    serialize: (callback) => {
+        callback();
+    },
+    run: (sql, params, callback) => {
+        if (typeof params === 'function') {
+            callback = params;
+            params = [];
+        }
+        pool.query(sql, params, function (err, results) {
+            if (err) {
+                if (callback) callback(err);
+                return;
+            }
+            const context = {
+                lastID: results.insertId,
+                changes: results.affectedRows
+            };
+            if (callback) callback.call(context, null);
+        });
+    },
+    get: (sql, params, callback) => {
+        if (typeof params === 'function') {
+            callback = params;
+            params = [];
+        }
+        pool.query(sql, params, (err, results) => {
+            if (err) {
+                if (callback) callback(err, null);
+                return;
+            }
+            if (callback) callback(null, results && results.length > 0 ? results[0] : undefined);
+        });
+    },
+    all: (sql, params, callback) => {
+        if (typeof params === 'function') {
+            callback = params;
+            params = [];
+        }
+        pool.query(sql, params, (err, results) => {
+            if (err) {
+                if (callback) callback(err, null);
+                return;
+            }
+            if (callback) callback(null, results);
+        });
+    }
+};
 
 export default db;

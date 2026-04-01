@@ -1,0 +1,1 @@
+{"message":"Server error during registration.","error":"could not execute statement [Field 'full_name' doesn't have a default value] [insert into users (createdAt,degree,email,fullName,password,resumeFilePath,role,studentIdFilePath,verification_status) values (?,?,?,?,?,?,?,?,?)]"}

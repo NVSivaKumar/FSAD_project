@@ -48,15 +48,15 @@ app.listen(PORT, () => {
     // Initialize Database setup
     db.serialize(() => {
         db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fullName TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            fullName VARCHAR(255) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
             password TEXT NOT NULL,
-            role TEXT NOT NULL,
+            role VARCHAR(50) NOT NULL,
             studentIdFilePath TEXT,
             degree TEXT,
             resumeFilePath TEXT,
-            verification_status TEXT DEFAULT 'APPROVED',
+            verification_status VARCHAR(50) DEFAULT 'APPROVED',
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )`, (err) => {
             if (err) {
@@ -65,33 +65,34 @@ app.listen(PORT, () => {
                 console.log("Users table initialized.");
 
                 // Add verification_status column if it doesn't exist (for existing databases)
-                db.run(`ALTER TABLE users ADD COLUMN verification_status TEXT DEFAULT 'APPROVED'`, (alterErr) => {
+                db.run(`ALTER TABLE users ADD COLUMN verification_status VARCHAR(50) DEFAULT 'APPROVED'`, (alterErr) => {
                     // Ignore "duplicate column name" errors
-                    if (alterErr && !alterErr.message.includes('duplicate column name')) {
+                    if (alterErr && !alterErr.message.includes('Duplicate column name')) {
                         console.error("Error adding verification_status column", alterErr.message);
                     }
                 });
-            }
-        });
 
-        db.run(`CREATE TABLE IF NOT EXISTS appointments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            studentId INTEGER,
-            studentName TEXT NOT NULL,
-            counselorId INTEGER NOT NULL,
-            counselorName TEXT NOT NULL,
-            date TEXT NOT NULL,
-            time TEXT NOT NULL,
-            message TEXT,
-            status TEXT DEFAULT 'Scheduled',
-            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(studentId) REFERENCES users(id),
-            FOREIGN KEY(counselorId) REFERENCES users(id)
-        )`, (err) => {
-            if (err) {
-                console.error("Error creating appointments table", err.message);
-            } else {
-                console.log("Appointments table initialized.");
+                // Now create appointments table since users table is guaranteed to exist
+                db.run(`CREATE TABLE IF NOT EXISTS appointments (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    studentId INT,
+                    studentName VARCHAR(255) NOT NULL,
+                    counselorId INT NOT NULL,
+                    counselorName VARCHAR(255) NOT NULL,
+                    date VARCHAR(255) NOT NULL,
+                    time VARCHAR(255) NOT NULL,
+                    message TEXT,
+                    status VARCHAR(50) DEFAULT 'Scheduled',
+                    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY(studentId) REFERENCES users(id),
+                    FOREIGN KEY(counselorId) REFERENCES users(id)
+                )`, (err) => {
+                    if (err) {
+                        console.error("Error creating appointments table", err.message);
+                    } else {
+                        console.log("Appointments table initialized.");
+                    }
+                });
             }
         });
     });
