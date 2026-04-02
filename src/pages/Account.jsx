@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import API_BASE_URL from '../utils/config';
 
 const Account = () => {
     const { user, logout } = useAuth();
@@ -21,7 +20,7 @@ const Account = () => {
         if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) return;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/${user.id}`, {
+            const response = await fetch(`http://localhost:5000/api/auth/${user.id}`, {
                 method: 'DELETE'
             });
 

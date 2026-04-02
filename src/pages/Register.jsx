@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Briefcase, FileText, GraduationCap, IdCard, Eye, EyeOff } from 'lucide-react';
-import API_BASE_URL from '../utils/config';
 import { AnimatedAuthLayout } from '@/components/ui/animated-auth-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,7 +62,7 @@ const Register = () => {
                 }
             }
 
-            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
                 method: 'POST',
                 // Don't set Content-Type header manually when using FormData
                 // Fetch will automatically set it to multipart/form-data with the correct boundary

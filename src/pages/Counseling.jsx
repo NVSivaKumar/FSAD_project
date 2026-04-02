@@ -1,4 +1,4 @@
-import API_BASE_URL from '../utils/config';
+import React, { useState, useEffect } from 'react';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import { getCounselors } from '../utils/mockData';
@@ -22,7 +22,7 @@ const Counseling = () => {
         const fetchCounselors = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`${API_BASE_URL}/counselors`);
+                const response = await fetch('http://localhost:5000/api/counselors');
                 if (!response.ok) {
                     throw new Error('Failed to fetch counselors');
                 }
@@ -50,7 +50,7 @@ const Counseling = () => {
         const fetchUserAppointments = async () => {
             if (!currentUser || currentUser.role !== 'student') return;
             try {
-                const response = await fetch(`${API_BASE_URL}/appointments/${currentUser.id}/student`);
+                const response = await fetch(`http://localhost:5000/api/appointments/${currentUser.id}/student`);
                 if (response.ok) {
                     const data = await response.json();
                     setAppointments(data);
@@ -74,7 +74,7 @@ const Counseling = () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/appointments`, {
+            const response = await fetch('http://localhost:5000/api/appointments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
