@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../utils/config';
 import Card from '../components/Card';
 import { getAppointments, cancelAppointment } from '../utils/mockData';
 import { Calendar, Clock, User, Trash2, Video } from 'lucide-react';
@@ -14,7 +14,7 @@ const MyBookings = () => {
         if (!currentUser) return;
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/appointments/${currentUser.id}/student`);
+            const response = await fetch(`${API_BASE_URL}/appointments/${currentUser.id}/student`);
             if (!response.ok) throw new Error('Failed to fetch appointments');
             const data = await response.json();
             setAppointments(data);
@@ -33,7 +33,7 @@ const MyBookings = () => {
     const handleCancel = async (id) => {
         if (window.confirm("Are you sure you want to cancel this booking?")) {
             try {
-                const response = await fetch(`http://localhost:5000/api/appointments/${id}`, {
+                const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
                     method: 'DELETE'
                 });
                 if (!response.ok) throw new Error('Failed to cancel appointment');

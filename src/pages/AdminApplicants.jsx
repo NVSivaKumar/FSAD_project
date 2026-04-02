@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../utils/config';
 import { Users, FileText, IdCard, Search, Filter, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import Card from '../components/Card';
 
@@ -14,7 +14,7 @@ const AdminApplicants = () => {
     useEffect(() => {
         const fetchApplicants = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/admin/users');
+                const response = await fetch(`${API_BASE_URL}/admin/users`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch applicants');
                 }
@@ -30,7 +30,7 @@ const AdminApplicants = () => {
         const fetchPendingUsers = async () => {
             setIsPendingLoading(true);
             try {
-                const response = await fetch('http://localhost:5000/api/admin/pending-users');
+                const response = await fetch(`${API_BASE_URL}/admin/pending-users`);
                 if (response.ok) {
                     const data = await response.json();
                     setPendingUsers(data);
@@ -49,7 +49,7 @@ const AdminApplicants = () => {
     const fetchPendingUsersGlobal = async () => {
         setIsPendingLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/admin/pending-users');
+            const response = await fetch(`${API_BASE_URL}/admin/pending-users`);
             if (response.ok) {
                 const data = await response.json();
                 setPendingUsers(data);
@@ -65,13 +65,13 @@ const AdminApplicants = () => {
         if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/${id}/${action}`, {
+            const response = await fetch(`${API_BASE_URL}/admin/${id}/${action}`, {
                 method: 'PATCH'
             });
 
             if (response.ok) {
                 // Fetch the accepted user list again so they show up below
-                const applicantsResponse = await fetch('http://localhost:5000/api/admin/users');
+                const applicantsResponse = await fetch(`${API_BASE_URL}/admin/users`);
                 if (applicantsResponse.ok) {
                     const data = await applicantsResponse.json();
                     setApplicants(data);
@@ -91,7 +91,7 @@ const AdminApplicants = () => {
         if (!window.confirm('Are you sure you want to delete this user? This action is permanent.')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
                 method: 'DELETE'
             });
 
@@ -125,7 +125,9 @@ const AdminApplicants = () => {
 
         // Ensure the path is correctly formatted for the URL
         const normalizedPath = filePath.replace(/\\/g, '/');
-        const fileUrl = `http://localhost:5000/${normalizedPath}`;
+        // Extract base URL (remove /api suffix) for static files
+        const STATIC_BASE_URL = API_BASE_URL.replace('/api', '');
+        const fileUrl = `${STATIC_BASE_URL}/${normalizedPath}`;
 
         return (
             <a

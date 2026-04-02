@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../utils/config';
 import { Users, Mail, Calendar } from 'lucide-react';
 import Card from '../components/Card';
 
@@ -14,7 +14,7 @@ const MyStudents = () => {
         setIsLoading(true);
         try {
             // Re-use the counselor appointments endpoint to get all bookings
-            const response = await fetch(`http://localhost:5000/api/appointments/${currentUser.id}/counselor`);
+            const response = await fetch(`${API_BASE_URL}/appointments/${currentUser.id}/counselor`);
             if (!response.ok) throw new Error('Failed to fetch appointments');
             const data = await response.json();
 

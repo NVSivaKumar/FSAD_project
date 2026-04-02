@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../utils/config';
 import { Calendar, Clock, User, CheckCircle, XCircle, Check, X, Video } from 'lucide-react';
 import Card from '../components/Card';
 
@@ -13,7 +13,7 @@ const MyAppointments = () => {
         if (!currentUser) return;
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/appointments/${currentUser.id}/counselor`);
+            const response = await fetch(`${API_BASE_URL}/appointments/${currentUser.id}/counselor`);
             if (!response.ok) throw new Error('Failed to fetch appointments');
             const data = await response.json();
             setAppointments(data);
@@ -27,7 +27,7 @@ const MyAppointments = () => {
 
     const handleStatusChange = async (id, newStatus) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/appointments/${id}/status`, {
+            const response = await fetch(`${API_BASE_URL}/appointments/${id}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
